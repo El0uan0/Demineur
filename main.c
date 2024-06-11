@@ -50,29 +50,6 @@ int main(int argc, char **argv)
 
     // afficheGrille(difficulte);
 
-     // Initialize the timer
-    int start_time = gfx_get_time();
-    int elapsed_time = 0;
-
-    // Main loop
-    while (1) {
-        // Clear the screen
-        gfx_clear_screen();
-
-        // Get the current time
-        int current_time = gfx_get_time();
-
-        // Calculate the elapsed time
-        elapsed_time = (current_time - start_time) / 1000;
-
-        // Display the timer
-        char timer_text[20];
-        sprintf(timer_text, "Timer: %d seconds", elapsed_time);
-        gfx_draw_text(10, 10, timer_text);
-
-        // Wait for the next frame
-        gfx_wait_frame();
-    }
 
     return 0;
 }

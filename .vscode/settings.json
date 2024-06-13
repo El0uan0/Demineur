@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "tableau.h": "c",
+    "eslib.h": "c"
+  }
+}

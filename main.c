@@ -26,17 +26,21 @@ int main(int argc, char **argv)
 
 void gestionEvenement(EvenementGfx evenement)
 {
-    static int difficulte = 1;
+    static int difficulte = 3;
     static structTab t;
+    static structTab tabMask;
     static structCaseDevoile caseDevoile;
 
     switch (evenement)
     {
     case Initialisation:
         t = creeTab(difficulte);
+        tabMask = creeTabMask(t);
         remplirTabMines(&t);
         remplirTabChiffres(&t);
+        initCaseDevoile(&caseDevoile, 1000);
         demandeTemporisation(20);
+        afficheTab(t);
         break;
 
     case Temporisation:
@@ -45,7 +49,7 @@ void gestionEvenement(EvenementGfx evenement)
 
     case Affichage:
         afficheGrille(difficulte, &t);
-        devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile);
+        devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile, &t, &tabMask);
         dessineCaseDevoile(&caseDevoile);
         break;
 
@@ -59,7 +63,6 @@ void gestionEvenement(EvenementGfx evenement)
         switch (etatBoutonSouris())
         {
         case GaucheAppuye:
-            getValTab(t, getCol(abscisseSouris()), getRow(ordonneeSouris()));
             break;
         case GaucheRelache:
             break;

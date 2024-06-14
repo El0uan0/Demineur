@@ -39,6 +39,23 @@ structTab creeTab(int difficulty)
     return t;
 }
 
+structTab creeTabMask(structTab t)
+{
+    structTab tabMask;
+    tabMask.cols = t.cols;
+    tabMask.rows = t.rows;
+
+    for (int i = 0; i < tabMask.rows; i++)
+    {
+        for (int j = 0; j < tabMask.cols; j++)
+        {
+            t.tableau[i][j] = 0;
+        }
+    }
+
+    return tabMask;
+}
+
 void afficheTab(structTab t)
 {
     int **tableauTMP = (int **)malloc(t.rows * sizeof(int *));
@@ -81,7 +98,7 @@ void remplirTabMines(structTab *t)
         for (int j = 0; j < t->cols; j++)
         {
             tmp = rand() % 10;
-            if (tmp < 3)
+            if (tmp < 1)
             {
                 t->tableau[i][j] = 9;
             }

@@ -12,6 +12,7 @@ typedef struct
 } structTab;
 
 structTab creeTab(int difficulty);
+structTab creeTabMask(structTab t);
 void afficheTab(structTab t);
 void remplirTabMines(structTab *t);
 void remplirTabChiffres(structTab *t);

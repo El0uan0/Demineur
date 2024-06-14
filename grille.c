@@ -35,24 +35,12 @@ void afficheGrille(int difficulte, structTab *t)
         break;
     }
     // Dessine les carrés (cases)
-    // couleurCourante(0, 255, 0);
+    couleurCourante(255, 255, 255);
     int x1 = 50, y1 = 50, x2 = 80, y2 = 80;
     for (int i = 0; i < t->rows; ++i)
     {
         for (int j = 0; j < t->cols; ++j)
         {
-            switch (t->tableau[i][j])
-            {
-            case 0:;
-                couleurCourante(255, 255, 255);
-                break;
-            case 9:
-                couleurCourante(255, 0, 0);
-                break;
-            default:
-                couleurCourante(0, 255, 0);
-                break;
-            }
             rectangle(x1, y1, x2, y2);
             x1 += 30, x2 += 30;
         }
@@ -80,8 +68,8 @@ int getCol(int x)
     if (x < largeurFenetre() - 50 && x > 50)
     {
 
-        // printf("Col : %d\n", (x - 50) / 30 + 1);
-        return (x - 50) / 30 + 1;
+        // printf("Col : %d\n", (x - 50) / 30);
+        return (x - 50) / 30;
     }
     else
     {
@@ -94,8 +82,8 @@ int getRow(int y)
 
     if (y < hauteurFenetre() - 50 && y > 50)
     {
-        // printf("Ligne : %d\n", (y - 50) / 30 + 1);
-        return (y - 50) / 30 + 1;
+        // printf("Ligne : %d\n", (y - 50) / 30);
+        return (y - 50) / 30;
     }
     else
     {
@@ -103,46 +91,116 @@ int getRow(int y)
     }
 }
 
-int getValTab(structTab t, int x, int y)
+int estDansTab(structTab t, int x, int y)
 {
-    if (x == -1 || y == -1)
+    if (x <= -1 || y <= -1 || x >= t.cols || y >= t.rows)
     {
-        printf("Pas sur une case\n");
-        return -1;
+        // printf("Pas sur une case\n");
+        return 0;
     }
     else
     {
         // printf("%d\n", t.tableau[y - 1][x - 1]);
-        return t.tableau[y - 1][x - 1];
+        return 1;
     }
 }
 
-void ajouteCaseDevoile(structCaseDevoile *caseDevoile, int x1, int y1, int x2, int y2)
+void initCaseDevoile(structCaseDevoile *caseDevoile, int nbCases)
+{
+    caseDevoile->indice = 0;
+    caseDevoile->tableau = (int(*)[5])malloc(nbCases * sizeof(int[5]));
+}
+
+void ajouteCaseDevoile(structCaseDevoile *caseDevoile, int x1, int y1, int x2, int y2, int type, structTab *tabMask, int row, int col)
 {
     caseDevoile->tableau[caseDevoile->indice][0] = x1;
     caseDevoile->tableau[caseDevoile->indice][1] = y1;
     caseDevoile->tableau[caseDevoile->indice][2] = x2;
     caseDevoile->tableau[caseDevoile->indice][3] = y2;
+    caseDevoile->tableau[caseDevoile->indice][4] = type;
     caseDevoile->indice += 1;
+    tabMask->tableau[row][col] = 1;
 }
 
-void devoileCase(int col, int row, structCaseDevoile *caseDevoile)
+void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t, structTab *tabMask)
 {
-    if (etatBoutonSouris() == GaucheAppuye)
+    if (etatBoutonSouris() == GaucheAppuye && estDansTab(*t, col, row) && tabMask->tableau[row][col] == 0)
     {
-        couleurCourante(0, 0, 0);
-        rectangle((col - 1) * 30 + 50, (row - 1) * 30 + 50, (col - 1) * 30 + 80, (row - 1) * 30 + 80);
-        ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, (row - 1) * 30 + 50, (col - 1) * 30 + 80, (row - 1) * 30 + 80);
+        switch (t->tableau[row][col])
+        {
+        case 0:
+            if (t->tableau[row - 1][col - 1] == 0 && estDansTab(*t, col - 1, row - 1) && tabMask->tableau[row - 1][col - 1] == 0)
+            {
+                devoileCase(col - 1, row - 1, caseDevoile, t, tabMask);
+            }
+            if (t->tableau[row - 1][col] == 0 && estDansTab(*t, col, row - 1) && tabMask->tableau[row - 1][col] == 0)
+            {
+                devoileCase(col, row - 1, caseDevoile, t, tabMask);
+            }
+            if (t->tableau[row - 1][col + 1] == 0 && estDansTab(*t, col + 1, row - 1) && tabMask->tableau[row - 1][col + 1] == 0)
+            {
+                devoileCase(col + 1, row - 1, caseDevoile, t, tabMask);
+            }
+            if (t->tableau[row][col - 1] == 0 && estDansTab(*t, col - 1, row) && tabMask->tableau[row][col - 1] == 0)
+            {
+                devoileCase(col - 1, row, caseDevoile, t, tabMask);
+            }
+            if (t->tableau[row][col + 1] == 0 && estDansTab(*t, col + 1, row) && tabMask->tableau[row][col + 1] == 0)
+            {
+                devoileCase(col + 1, row, caseDevoile, t, tabMask);
+            }
+            if (t->tableau[row + 1][col - 1] == 0 && estDansTab(*t, col - 1, row + 1) && tabMask->tableau[row + 1][col - 1] == 0)
+            {
+                devoileCase(col - 1, row + 1, caseDevoile, t, tabMask);
+            }
+            if (t->tableau[row + 1][col] == 0 && estDansTab(*t, col, row + 1) && tabMask->tableau[row + 1][col] == 0)
+            {
+                devoileCase(col, row + 1, caseDevoile, t, tabMask);
+            }
+            if (t->tableau[row + 1][col + 1] == 0 && estDansTab(*t, col + 1, row + 1) && tabMask->tableau[row + 1][col + 1] == 0)
+            {
+                devoileCase(col + 1, row + 1, caseDevoile, t, tabMask);
+            }
+            couleurCourante(255, 255, 255);
+            break;
+        case 9:
+            couleurCourante(255, 0, 0);
+            break;
+        default:
+            couleurCourante(0, 255, 0);
+            break;
+        }
+        rectangle(col * 30 + 50, row * 30 + 50, col * 30 + 80, row * 30 + 80);
+        ajouteCaseDevoile(caseDevoile, col * 30 + 50, row * 30 + 50, col * 30 + 80, row * 30 + 80, t->tableau[row][col], tabMask, row, col);
     }
 }
 
 void dessineCaseDevoile(structCaseDevoile *caseDevoile)
 {
-    for (int i = 0; i < sizeof(caseDevoile->tableau); i++)
+    for (int i = 0; i < caseDevoile->indice; i++)
     {
-        if (caseDevoile->tableau[i][3] != 0) //[3] est Y2, qui ne pourra jamais etre nul
+        int x1 = caseDevoile->tableau[i][0];
+        int y1 = caseDevoile->tableau[i][1];
+        int x2 = caseDevoile->tableau[i][2];
+        int y2 = caseDevoile->tableau[i][3];
+        int val = caseDevoile->tableau[i][4];
+
+        switch (val)
         {
-            rectangle(caseDevoile->tableau[i][0], caseDevoile->tableau[i][1], caseDevoile->tableau[i][2], caseDevoile->tableau[i][3]);
+        case 0:
+            couleurCourante(255, 255, 255);
+            break;
+        case 9:
+            couleurCourante(255, 0, 0);
+            break;
+        default:
+            couleurCourante(0, 255, 0);
+            break;
+        }
+
+        if (y2 != 0)
+        {
+            rectangle(x1, y1, x2, y2);
         }
         else
         {
@@ -153,14 +211,19 @@ void dessineCaseDevoile(structCaseDevoile *caseDevoile)
 
 void afficheCaseDevoile(structCaseDevoile *caseDevoile)
 {
-    for (int i = 0; i < sizeof(caseDevoile->tableau); i++)
+    for (int i = 0; i < caseDevoile->indice; i++)
     {
-        if (caseDevoile->tableau[i][3] != 0) //[3] est Y2, qui ne pourra jamais etre nul
+        int x1 = caseDevoile->tableau[i][0];
+        int y1 = caseDevoile->tableau[i][1];
+        int x2 = caseDevoile->tableau[i][2];
+        int y2 = caseDevoile->tableau[i][3];
+
+        if (y2 != 0) // [3] est Y2, qui ne pourra jamais être nul
         {
-            printf("X1 : %d\n", caseDevoile->tableau[i][0]);
-            printf("Y1 : %d\n", caseDevoile->tableau[i][1]);
-            printf("X2 : %d\n", caseDevoile->tableau[i][2]);
-            printf("Y1 : %d\n", caseDevoile->tableau[i][3]);
+            printf("X1 : %d\n", x1);
+            printf("Y1 : %d\n", y1);
+            printf("X2 : %d\n", x2);
+            printf("Y2 : %d\n", y2);
         }
         else
         {

@@ -1,7 +1,7 @@
-main: main.o tableau.o grille.o gfxlib/libisentlib.a
-	gcc -Wall main.o -o main tableau.o grille.o gfxlib/libisentlib.a -lm -lglut -lGL -lX11
+main: main.o tableau.o grille.o GFXLib/libisentlib.a
+	gcc -Wall main.o -o main tableau.o grille.o GFXLib/libisentlib.a -lm -lglut -lGL -lX11
 
-main.o: main.c gfxlib/GfxLib.h gfxlib/BmpLib.h gfxlib/ESLib.h
+main.o: main.c GFXLib/GfxLib.h GFXLib/BmpLib.h GFXLib/ESLib.h
 	gcc -Wall -c main.c
 
 tableau.o: tableau.c tableau.h

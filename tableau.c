@@ -49,7 +49,7 @@ structTab creeTabMask(structTab t)
     {
         for (int j = 0; j < tabMask.cols; j++)
         {
-            t.tableau[i][j] = 0;
+            tabMask.tableau[i][j] = 0;
         }
     }
 
@@ -98,7 +98,7 @@ void remplirTabMines(structTab *t)
         for (int j = 0; j < t->cols; j++)
         {
             tmp = rand() % 10;
-            if (tmp < 1)
+            if (tmp < 2)
             {
                 t->tableau[i][j] = 9;
             }

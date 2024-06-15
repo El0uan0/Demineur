@@ -1,9 +1,9 @@
 #include <stdlib.h>        // Pour pouvoir utiliser exit()
 #include <stdio.h>         // Pour pouvoir utiliser printf()
 #include <math.h>          // Pour pouvoir utiliser sin() et cos()
-#include "gfxlib/GfxLib.h" // Seul cet include est necessaire pour faire du graphique
-#include "gfxlib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
-#include "gfxlib/ESLib.h"  // Pour utiliser valeurAleatoire()
+#include "GFXLib/GfxLib.h" // Seul cet include est necessaire pour faire du graphique
+#include "GFXLib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
+#include "GFXLib/ESLib.h"  // Pour utiliser valeurAleatoire()
 #include "tableau.h"
 #include "grille.h"
 

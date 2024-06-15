@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "tableau.h": "c",
-    "eslib.h": "c"
+    "eslib.h": "c",
+    "bmplib.h": "c",
+    "gfxlib.h": "c"
   }
 }

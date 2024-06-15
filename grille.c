@@ -2,9 +2,9 @@
 #include <stdio.h>  // Pour pouvoir utiliser printf()
 #include <math.h>   // Pour pouvoir utiliser sin() et cos()
 #include <time.h>
-#include "gfxlib/GfxLib.h" // Seul cet include est necessaire pour faire du graphique
-#include "gfxlib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
-#include "gfxlib/ESLib.h"  // Pour utiliser valeurAleatoire()
+#include "GFXLib/GfxLib.h" // Seul cet include est necessaire pour faire du graphique
+#include "GFXLib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
+#include "GFXLib/ESLib.h"  // Pour utiliser valeurAleatoire()
 #include "tableau.h"
 #include "grille.h"
 
@@ -124,41 +124,56 @@ void ajouteCaseDevoile(structCaseDevoile *caseDevoile, int x1, int y1, int x2, i
 
 void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t, structTab *tabMask)
 {
-    if (etatBoutonSouris() == GaucheAppuye && estDansTab(*t, col, row) && tabMask->tableau[row][col] == 0)
+    if (caseDevoile != NULL && t != NULL && tabMask != NULL && etatBoutonSouris() == GaucheAppuye && estDansTab(*t, col, row))
     {
         switch (t->tableau[row][col])
         {
         case 0:
-            if (t->tableau[row - 1][col - 1] == 0 && estDansTab(*t, col - 1, row - 1) && tabMask->tableau[row - 1][col - 1] == 0)
+            if (estDansTab(*t, col - 1, row - 1) && t->tableau[row - 1][col - 1] == 0 && tabMask->tableau[row - 1][col - 1] == 0)
             {
+                ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, (row - 1) * 30 + 50, (col - 1) * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col - 1], tabMask, row - 1, col - 1);
                 devoileCase(col - 1, row - 1, caseDevoile, t, tabMask);
             }
-            if (t->tableau[row - 1][col] == 0 && estDansTab(*t, col, row - 1) && tabMask->tableau[row - 1][col] == 0)
+
+            if (estDansTab(*t, col, row - 1) && t->tableau[row - 1][col] == 0 && tabMask->tableau[row - 1][col] == 0)
             {
+                ajouteCaseDevoile(caseDevoile, col * 30 + 50, (row - 1) * 30 + 50, col * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col], tabMask, row - 1, col);
                 devoileCase(col, row - 1, caseDevoile, t, tabMask);
             }
-            if (t->tableau[row - 1][col + 1] == 0 && estDansTab(*t, col + 1, row - 1) && tabMask->tableau[row - 1][col + 1] == 0)
+
+            if (estDansTab(*t, col + 1, row - 1) && t->tableau[row - 1][col + 1] == 0 && tabMask->tableau[row - 1][col + 1] == 0)
             {
+                ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, (row - 1) * 30 + 50, (col + 1) * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col + 1], tabMask, row - 1, col + 1);
                 devoileCase(col + 1, row - 1, caseDevoile, t, tabMask);
             }
-            if (t->tableau[row][col - 1] == 0 && estDansTab(*t, col - 1, row) && tabMask->tableau[row][col - 1] == 0)
+
+            if (estDansTab(*t, col - 1, row) && t->tableau[row][col - 1] == 0 && tabMask->tableau[row][col - 1] == 0)
             {
+                ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, row * 30 + 50, (col - 1) * 30 + 80, row * 30 + 80, t->tableau[row][col - 1], tabMask, row, col - 1);
                 devoileCase(col - 1, row, caseDevoile, t, tabMask);
             }
-            if (t->tableau[row][col + 1] == 0 && estDansTab(*t, col + 1, row) && tabMask->tableau[row][col + 1] == 0)
+
+            if (estDansTab(*t, col + 1, row) && t->tableau[row][col + 1] == 0 && tabMask->tableau[row][col + 1] == 0)
             {
+                ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, row * 30 + 50, (col + 1) * 30 + 80, row * 30 + 80, t->tableau[row][col + 1], tabMask, row, col + 1);
                 devoileCase(col + 1, row, caseDevoile, t, tabMask);
             }
-            if (t->tableau[row + 1][col - 1] == 0 && estDansTab(*t, col - 1, row + 1) && tabMask->tableau[row + 1][col - 1] == 0)
+
+            if (estDansTab(*t, col - 1, row + 1) && t->tableau[row + 1][col - 1] == 0 && tabMask->tableau[row + 1][col - 1] == 0)
             {
+                ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, (row + 1) * 30 + 50, (col - 1) * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col - 1], tabMask, row + 1, col - 1);
                 devoileCase(col - 1, row + 1, caseDevoile, t, tabMask);
             }
-            if (t->tableau[row + 1][col] == 0 && estDansTab(*t, col, row + 1) && tabMask->tableau[row + 1][col] == 0)
+
+            if (estDansTab(*t, col, row + 1) && t->tableau[row + 1][col] == 0 && tabMask->tableau[row + 1][col] == 0)
             {
+                ajouteCaseDevoile(caseDevoile, col * 30 + 50, (row + 1) * 30 + 50, col * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col], tabMask, row + 1, col);
                 devoileCase(col, row + 1, caseDevoile, t, tabMask);
             }
-            if (t->tableau[row + 1][col + 1] == 0 && estDansTab(*t, col + 1, row + 1) && tabMask->tableau[row + 1][col + 1] == 0)
+
+            if (estDansTab(*t, col + 1, row + 1) && t->tableau[row + 1][col + 1] == 0 && tabMask->tableau[row + 1][col + 1] == 0)
             {
+                ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, (row + 1) * 30 + 50, (col + 1) * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col + 1], tabMask, row + 1, col + 1);
                 devoileCase(col + 1, row + 1, caseDevoile, t, tabMask);
             }
             couleurCourante(255, 255, 255);

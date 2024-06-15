@@ -14,4 +14,4 @@ clean:
 	rm -f *~ *.o
 
 deepclean: clean
-	rm -f exemple
+	rm -f main

@@ -185,13 +185,13 @@ void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t,
             couleurCourante(0, 255, 0);
             break;
         }
-        rectangle(col * 30 + 50, row * 30 + 50, col * 30 + 80, row * 30 + 80);
         ajouteCaseDevoile(caseDevoile, col * 30 + 50, row * 30 + 50, col * 30 + 80, row * 30 + 80, t->tableau[row][col], tabMask, row, col);
     }
 }
 
-void dessineCaseDevoile(structCaseDevoile *caseDevoile)
+void dessineCaseDevoile(structCaseDevoile *caseDevoile, DonneesImageRGB **listeImages)
 {
+    static unsigned char *donnees = NULL;
     for (int i = 0; i < caseDevoile->indice; i++)
     {
         int x1 = caseDevoile->tableau[i][0];
@@ -203,19 +203,43 @@ void dessineCaseDevoile(structCaseDevoile *caseDevoile)
         switch (val)
         {
         case 0:
-            couleurCourante(255, 255, 255);
+            donnees = listeImages[0]->donneesRGB;
+            break;
+        case 1:
+            donnees = listeImages[1]->donneesRGB;
+            break;
+        case 2:
+            donnees = listeImages[2]->donneesRGB;
+            break;
+        case 3:
+            donnees = listeImages[3]->donneesRGB;
+            break;
+        case 4:
+            donnees = listeImages[4]->donneesRGB;
+            break;
+        case 5:
+            donnees = listeImages[5]->donneesRGB;
+            break;
+        case 6:
+            donnees = listeImages[6]->donneesRGB;
+            break;
+        case 7:
+            donnees = listeImages[7]->donneesRGB;
+            break;
+        case 8:
+            donnees = listeImages[8]->donneesRGB;
             break;
         case 9:
-            couleurCourante(255, 0, 0);
+            donnees = listeImages[9]->donneesRGB;
             break;
         default:
-            couleurCourante(0, 255, 0);
+            donnees = listeImages[0]->donneesRGB;
             break;
         }
 
-        if (y2 != 0)
+        if (y2 != 0 && donnees != NULL)
         {
-            rectangle(x1, y1, x2, y2);
+            ecrisImage(x1, y1, 30, 30, donnees);
         }
         else
         {

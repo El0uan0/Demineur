@@ -17,7 +17,7 @@ int estDansTab(structTab t, int x, int y);
 void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t, structTab *tabMask);
 void ajouteCaseDevoile(structCaseDevoile *caseDevoile, int x1, int y1, int x2, int y2, int type, structTab *tabMask, int row, int col);
 void afficheCaseDevoile(structCaseDevoile *caseDevoile);
-void dessineCaseDevoile(structCaseDevoile *caseDevoile);
+void dessineCaseDevoile(structCaseDevoile *caseDevoile, DonneesImageRGB **listeImages);
 void initCaseDevoile(structCaseDevoile *caseDevoile, int nbCases);
 
 #endif

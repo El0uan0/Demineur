@@ -6,6 +6,7 @@
 #include "GFXLib/ESLib.h"  // Pour utiliser valeurAleatoire()
 #include "tableau.h"
 #include "grille.h"
+#include "images.h"
 
 // Largeur et hauteur par defaut d'une image correspondant a nos criteres
 #define LargeurFenetre 800
@@ -17,8 +18,6 @@ int main(int argc, char **argv)
 
     prepareFenetreGraphique("OpenGL", LargeurFenetre, HauteurFenetre);
 
-    /* Lance la boucle qui aiguille les evenements sur la fonction gestionEvenement ci-apres,
-        qui elle-meme utilise fonctionAffichage ci-dessous */
     lanceBoucleEvenements();
 
     return 0;
@@ -26,10 +25,11 @@ int main(int argc, char **argv)
 
 void gestionEvenement(EvenementGfx evenement)
 {
-    static int difficulte = 3;
+    static int difficulte = 1;
     static structTab t;
     static structTab tabMask;
     static structCaseDevoile caseDevoile;
+    static DonneesImageRGB *listeImages[12] = {0};
 
     switch (evenement)
     {
@@ -39,8 +39,9 @@ void gestionEvenement(EvenementGfx evenement)
         remplirTabMines(&t);
         remplirTabChiffres(&t);
         initCaseDevoile(&caseDevoile, 1000);
-        demandeTemporisation(20);
         afficheTab(t);
+        initImages(listeImages);
+        demandeTemporisation(20);
         break;
 
     case Temporisation:
@@ -50,7 +51,7 @@ void gestionEvenement(EvenementGfx evenement)
     case Affichage:
         afficheGrille(difficulte, &t);
         devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile, &t, &tabMask);
-        dessineCaseDevoile(&caseDevoile);
+        dessineCaseDevoile(&caseDevoile, listeImages);
         break;
 
     case Clavier:

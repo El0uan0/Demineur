@@ -25,22 +25,23 @@ int main(int argc, char **argv)
 
 void gestionEvenement(EvenementGfx evenement)
 {
-    static int difficulte = 1;
+    static bool firstClic = 0;
+    static int difficulte = 3;
     static structTab t;
     static structTab tabMask;
+    static structTab tabDrap;
     static structCaseDevoile caseDevoile;
     static DonneesImageRGB *listeImages[12] = {0};
+    static DonneesImageRGB *listeAssets[12] = {0};
 
     switch (evenement)
     {
     case Initialisation:
         t = creeTab(difficulte);
         tabMask = creeTabMask(t);
-        remplirTabMines(&t);
-        remplirTabChiffres(&t);
-        initCaseDevoile(&caseDevoile, 1000);
-        afficheTab(t);
+        tabDrap = creeTabMask(t);
         initImages(listeImages);
+        initAssets(listeAssets);
         demandeTemporisation(20);
         break;
 
@@ -50,13 +51,14 @@ void gestionEvenement(EvenementGfx evenement)
 
     case Affichage:
         afficheGrille(difficulte, &t);
-        devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile, &t, &tabMask);
+        afficheOverlay(difficulte, listeAssets);
+        devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile, &t, &tabMask, &tabDrap, firstClic);
         dessineCaseDevoile(&caseDevoile, listeImages);
+        dessineDrap(tabDrap, listeImages);
         break;
 
     case Clavier:
         break;
-
     case ClavierSpecial:
         break;
 
@@ -64,10 +66,32 @@ void gestionEvenement(EvenementGfx evenement)
         switch (etatBoutonSouris())
         {
         case GaucheAppuye:
+            if (firstClic == false && estDansTab(t, getCol(abscisseSouris()), getRow(ordonneeSouris())))
+            {
+                remplirTabMines(&t);
+                meursPasAuDebut(getCol(abscisseSouris()), getRow(ordonneeSouris()), &t);
+                remplirTabChiffres(&t);
+                afficheTab(t);
+                initCaseDevoile(&caseDevoile, 1000);
+                firstClic = true;
+            }
+            difficulte = choisirDifficulte(difficulte, &t, &tabMask, &tabDrap, &caseDevoile, &firstClic);
             break;
         case GaucheRelache:
             break;
         case DroiteAppuye:
+            if (firstClic)
+            {
+                if (tabMask.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0 && tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0)
+                {
+                    tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] = 1;
+                }
+                else
+                {
+                    tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] = 0;
+                }
+            }
+            break;
         case DroiteRelache:
             break;
         case MilieuAppuye:

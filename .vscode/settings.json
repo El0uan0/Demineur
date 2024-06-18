@@ -3,6 +3,8 @@
     "tableau.h": "c",
     "eslib.h": "c",
     "bmplib.h": "c",
-    "gfxlib.h": "c"
+    "gfxlib.h": "c",
+    "images.h": "c",
+    "grille.h": "c"
   }
 }

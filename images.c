@@ -5,6 +5,8 @@
 #include "GFXLib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
 #include "GFXLib/ESLib.h"
 #include "images.h"
+#include "grille.h"
+#include "tableau.h"
 
 void initImages(DonneesImageRGB **listeImages)
 {
@@ -19,4 +21,27 @@ void initImages(DonneesImageRGB **listeImages)
     listeImages[8] = lisBMPRGB("images/8.bmp");
     listeImages[9] = lisBMPRGB("images/bombe.bmp");
     listeImages[10] = lisBMPRGB("images/drapeau.bmp");
+}
+
+void initAssets(DonneesImageRGB **listeAssets)
+{
+    listeAssets[0] = lisBMPRGB("assets/asset.bmp");
+    listeAssets[1] = lisBMPRGB("assets/asset2.bmp");
+    listeAssets[2] = lisBMPRGB("assets/asset3.bmp");
+}
+
+void afficheOverlay(int difficulte, DonneesImageRGB **listeAssets)
+{
+    if (difficulte == 1)
+    {
+        ecrisImage(largeurFenetre() - 350, 50, listeAssets[0]->largeurImage, listeAssets[0]->hauteurImage, listeAssets[0]->donneesRGB);
+    }
+    if (difficulte == 2)
+    {
+        ecrisImage(largeurFenetre() - 350, 50, listeAssets[1]->largeurImage, listeAssets[1]->hauteurImage, listeAssets[1]->donneesRGB);
+    }
+    if (difficulte == 3)
+    {
+        ecrisImage(largeurFenetre() - 350, 50, listeAssets[2]->largeurImage, listeAssets[2]->hauteurImage, listeAssets[2]->donneesRGB);
+    }
 }

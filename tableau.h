@@ -16,5 +16,6 @@ structTab creeTabMask(structTab t);
 void afficheTab(structTab t);
 void remplirTabMines(structTab *t);
 void remplirTabChiffres(structTab *t);
+void meursPasAuDebut(int col, int row, structTab *t);
 
 #endif

@@ -6,11 +6,12 @@
 #include "GFXLib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
 #include "GFXLib/ESLib.h"  // Pour utiliser valeurAleatoire()
 #include "tableau.h"
+#include "images.h"
 #include "grille.h"
 
 void afficheGrille(int difficulte, structTab *t)
 {
-    srand(time(NULL));
+    effaceFenetre(211, 235, 248);
     int larg = largeurFenetre();
     int haut = hauteurFenetre();
     switch (difficulte)
@@ -18,24 +19,24 @@ void afficheGrille(int difficulte, structTab *t)
     case 1:
         if (larg != 400 || haut != 550)
         {
-            redimensionneFenetre(400, 550);
+            redimensionneFenetre(700, 550);
         }
         break;
     case 2:
         if (larg != 550 || haut != 700)
         {
-            redimensionneFenetre(550, 700);
+            redimensionneFenetre(850, 700);
         }
         break;
     case 3:
         if (larg != 700 || haut != 850)
         {
-            redimensionneFenetre(700, 850);
+            redimensionneFenetre(1000, 850);
         }
         break;
     }
     // Dessine les carrés (cases)
-    couleurCourante(255, 255, 255);
+    couleurCourante(200, 206, 172);
     int x1 = 50, y1 = 50, x2 = 80, y2 = 80;
     for (int i = 0; i < t->rows; ++i)
     {
@@ -49,23 +50,23 @@ void afficheGrille(int difficulte, structTab *t)
     }
 
     couleurCourante(0, 0, 0); // Dessine les lignes pour démarquer les cases
-    x1 = 80, y1 = 0;
-    for (int i = 0; i < t->cols; ++i)
+    x1 = 50, y1 = 50;
+    for (int i = 0; i < t->cols + 1; ++i)
     {
-        ligne(x1, y1, x1, 2 * 30 * t->rows);
+        ligne(x1, y1, x1, hauteurFenetre() - 50);
         x1 += 30;
     }
-    x1 = 0, y1 = 80;
-    for (int i = 0; i < t->rows; ++i)
+    x1 = 50, y1 = 50;
+    for (int i = 0; i < t->rows + 1; ++i)
     {
-        ligne(x1, y1, 2 * 30 * t->cols, y1);
+        ligne(x1, y1, largeurFenetre() - 350, y1);
         y1 += 30;
     }
 }
 
 int getCol(int x)
 {
-    if (x < largeurFenetre() - 50 && x > 50)
+    if (x < largeurFenetre() - 350 && x > 50)
     {
 
         // printf("Col : %d\n", (x - 50) / 30);
@@ -111,6 +112,16 @@ void initCaseDevoile(structCaseDevoile *caseDevoile, int nbCases)
     caseDevoile->tableau = (int(*)[5])malloc(nbCases * sizeof(int[5]));
 }
 
+void freeCaseDevoile(structCaseDevoile *caseDevoile)
+{
+    if (caseDevoile->tableau != NULL)
+    {
+        free(caseDevoile->tableau);
+        caseDevoile->tableau = NULL;
+        caseDevoile->indice = 0;
+    }
+}
+
 void ajouteCaseDevoile(structCaseDevoile *caseDevoile, int x1, int y1, int x2, int y2, int type, structTab *tabMask, int row, int col)
 {
     caseDevoile->tableau[caseDevoile->indice][0] = x1;
@@ -122,9 +133,9 @@ void ajouteCaseDevoile(structCaseDevoile *caseDevoile, int x1, int y1, int x2, i
     tabMask->tableau[row][col] = 1;
 }
 
-void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t, structTab *tabMask)
+void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t, structTab *tabMask, structTab *tabDrap, int firstClic)
 {
-    if (caseDevoile != NULL && t != NULL && tabMask != NULL && etatBoutonSouris() == GaucheAppuye && estDansTab(*t, col, row))
+    if (caseDevoile != NULL && t != NULL && tabMask != NULL && etatBoutonSouris() == GaucheAppuye && estDansTab(*t, col, row) && tabDrap->tableau[row][col] == 0 && firstClic == 1)
     {
         switch (t->tableau[row][col])
         {
@@ -132,57 +143,93 @@ void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t,
             if (estDansTab(*t, col - 1, row - 1) && t->tableau[row - 1][col - 1] == 0 && tabMask->tableau[row - 1][col - 1] == 0)
             {
                 ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, (row - 1) * 30 + 50, (col - 1) * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col - 1], tabMask, row - 1, col - 1);
-                devoileCase(col - 1, row - 1, caseDevoile, t, tabMask);
+                devoileCase(col - 1, row - 1, caseDevoile, t, tabMask, tabDrap, firstClic);
             }
 
             if (estDansTab(*t, col, row - 1) && t->tableau[row - 1][col] == 0 && tabMask->tableau[row - 1][col] == 0)
             {
                 ajouteCaseDevoile(caseDevoile, col * 30 + 50, (row - 1) * 30 + 50, col * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col], tabMask, row - 1, col);
-                devoileCase(col, row - 1, caseDevoile, t, tabMask);
+                devoileCase(col, row - 1, caseDevoile, t, tabMask, tabDrap, firstClic);
             }
 
             if (estDansTab(*t, col + 1, row - 1) && t->tableau[row - 1][col + 1] == 0 && tabMask->tableau[row - 1][col + 1] == 0)
             {
                 ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, (row - 1) * 30 + 50, (col + 1) * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col + 1], tabMask, row - 1, col + 1);
-                devoileCase(col + 1, row - 1, caseDevoile, t, tabMask);
+                devoileCase(col + 1, row - 1, caseDevoile, t, tabMask, tabDrap, firstClic);
             }
 
             if (estDansTab(*t, col - 1, row) && t->tableau[row][col - 1] == 0 && tabMask->tableau[row][col - 1] == 0)
             {
                 ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, row * 30 + 50, (col - 1) * 30 + 80, row * 30 + 80, t->tableau[row][col - 1], tabMask, row, col - 1);
-                devoileCase(col - 1, row, caseDevoile, t, tabMask);
+                devoileCase(col - 1, row, caseDevoile, t, tabMask, tabDrap, firstClic);
             }
 
             if (estDansTab(*t, col + 1, row) && t->tableau[row][col + 1] == 0 && tabMask->tableau[row][col + 1] == 0)
             {
                 ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, row * 30 + 50, (col + 1) * 30 + 80, row * 30 + 80, t->tableau[row][col + 1], tabMask, row, col + 1);
-                devoileCase(col + 1, row, caseDevoile, t, tabMask);
+                devoileCase(col + 1, row, caseDevoile, t, tabMask, tabDrap, firstClic);
             }
 
             if (estDansTab(*t, col - 1, row + 1) && t->tableau[row + 1][col - 1] == 0 && tabMask->tableau[row + 1][col - 1] == 0)
             {
                 ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, (row + 1) * 30 + 50, (col - 1) * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col - 1], tabMask, row + 1, col - 1);
-                devoileCase(col - 1, row + 1, caseDevoile, t, tabMask);
+                devoileCase(col - 1, row + 1, caseDevoile, t, tabMask, tabDrap, firstClic);
             }
 
             if (estDansTab(*t, col, row + 1) && t->tableau[row + 1][col] == 0 && tabMask->tableau[row + 1][col] == 0)
             {
                 ajouteCaseDevoile(caseDevoile, col * 30 + 50, (row + 1) * 30 + 50, col * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col], tabMask, row + 1, col);
-                devoileCase(col, row + 1, caseDevoile, t, tabMask);
+                devoileCase(col, row + 1, caseDevoile, t, tabMask, tabDrap, firstClic);
             }
 
             if (estDansTab(*t, col + 1, row + 1) && t->tableau[row + 1][col + 1] == 0 && tabMask->tableau[row + 1][col + 1] == 0)
             {
                 ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, (row + 1) * 30 + 50, (col + 1) * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col + 1], tabMask, row + 1, col + 1);
-                devoileCase(col + 1, row + 1, caseDevoile, t, tabMask);
+                devoileCase(col + 1, row + 1, caseDevoile, t, tabMask, tabDrap, firstClic);
             }
-            couleurCourante(255, 255, 255);
+            if (estDansTab(*t, col - 1, row - 1) && tabMask->tableau[row - 1][col - 1] == 0)
+            {
+                ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, (row - 1) * 30 + 50, (col - 1) * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col - 1], tabMask, row - 1, col - 1);
+            }
+
+            if (estDansTab(*t, col, row - 1) && tabMask->tableau[row - 1][col] == 0)
+            {
+                ajouteCaseDevoile(caseDevoile, col * 30 + 50, (row - 1) * 30 + 50, col * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col], tabMask, row - 1, col);
+            }
+
+            if (estDansTab(*t, col + 1, row - 1) && tabMask->tableau[row - 1][col + 1] == 0)
+            {
+                ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, (row - 1) * 30 + 50, (col + 1) * 30 + 80, (row - 1) * 30 + 80, t->tableau[row - 1][col + 1], tabMask, row - 1, col + 1);
+            }
+
+            if (estDansTab(*t, col - 1, row) && tabMask->tableau[row][col - 1] == 0)
+            {
+                ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, row * 30 + 50, (col - 1) * 30 + 80, row * 30 + 80, t->tableau[row][col - 1], tabMask, row, col - 1);
+            }
+
+            if (estDansTab(*t, col + 1, row) && tabMask->tableau[row][col + 1] == 0)
+            {
+                ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, row * 30 + 50, (col + 1) * 30 + 80, row * 30 + 80, t->tableau[row][col + 1], tabMask, row, col + 1);
+            }
+
+            if (estDansTab(*t, col - 1, row + 1) && tabMask->tableau[row + 1][col - 1] == 0)
+            {
+                ajouteCaseDevoile(caseDevoile, (col - 1) * 30 + 50, (row + 1) * 30 + 50, (col - 1) * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col - 1], tabMask, row + 1, col - 1);
+            }
+
+            if (estDansTab(*t, col, row + 1) && tabMask->tableau[row + 1][col] == 0)
+            {
+                ajouteCaseDevoile(caseDevoile, col * 30 + 50, (row + 1) * 30 + 50, col * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col], tabMask, row + 1, col);
+            }
+
+            if (estDansTab(*t, col + 1, row + 1) && tabMask->tableau[row + 1][col + 1] == 0)
+            {
+                ajouteCaseDevoile(caseDevoile, (col + 1) * 30 + 50, (row + 1) * 30 + 50, (col + 1) * 30 + 80, (row + 1) * 30 + 80, t->tableau[row + 1][col + 1], tabMask, row + 1, col + 1);
+            }
             break;
         case 9:
-            couleurCourante(255, 0, 0);
             break;
         default:
-            couleurCourante(0, 255, 0);
             break;
         }
         ajouteCaseDevoile(caseDevoile, col * 30 + 50, row * 30 + 50, col * 30 + 80, row * 30 + 80, t->tableau[row][col], tabMask, row, col);
@@ -192,11 +239,11 @@ void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t,
 void dessineCaseDevoile(structCaseDevoile *caseDevoile, DonneesImageRGB **listeImages)
 {
     static unsigned char *donnees = NULL;
+
     for (int i = 0; i < caseDevoile->indice; i++)
     {
         int x1 = caseDevoile->tableau[i][0];
         int y1 = caseDevoile->tableau[i][1];
-        int x2 = caseDevoile->tableau[i][2];
         int y2 = caseDevoile->tableau[i][3];
         int val = caseDevoile->tableau[i][4];
 
@@ -248,6 +295,20 @@ void dessineCaseDevoile(structCaseDevoile *caseDevoile, DonneesImageRGB **listeI
     }
 }
 
+void dessineDrap(structTab tabDrap, DonneesImageRGB **listeImages)
+{
+    for (int i = 0; i < tabDrap.rows; i++)
+    {
+        for (int j = 0; j < tabDrap.cols; j++)
+        {
+            if (tabDrap.tableau[i][j] == 1)
+            {
+                ecrisImage(j * 30 + 50, i * 30 + 50, 30, 30, listeImages[10]->donneesRGB);
+            }
+        }
+    }
+}
+
 void afficheCaseDevoile(structCaseDevoile *caseDevoile)
 {
     for (int i = 0; i < caseDevoile->indice; i++)
@@ -269,4 +330,78 @@ void afficheCaseDevoile(structCaseDevoile *caseDevoile)
             break;
         }
     }
+}
+
+int reloadDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab *tabDrap, structCaseDevoile *caseDevoile, bool *firstClic)
+{
+    *firstClic = 0;
+    *t = creeTab(difficulte);
+    *tabMask = creeTabMask(*t);
+    *tabDrap = creeTabMask(*t);
+    for (int i = 0; i < t->cols * t->rows; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            caseDevoile->tableau[i][j] = 0;
+        }
+    }
+    switch (difficulte)
+    {
+    case 1:
+        redimensionneFenetre(700, 550);
+        return 1;
+        break;
+    case 2:
+        redimensionneFenetre(850, 700);
+        return 2;
+        break;
+    case 3:
+        redimensionneFenetre(1000, 850);
+        return 3;
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
+int choisirDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab *tabDrap, structCaseDevoile *caseDevoile, bool *firstClic)
+{
+    switch (difficulte)
+    {
+    case 1:
+        if (firstClic && abscisseSouris() > 470 && abscisseSouris() < 545 && ordonneeSouris() > 270 && ordonneeSouris() < 330)
+        {
+            difficulte = reloadDifficulte(2, t, tabMask, tabDrap, caseDevoile, firstClic);
+        }
+        if (firstClic && abscisseSouris() > 550 && abscisseSouris() < 625 && ordonneeSouris() > 270 && ordonneeSouris() < 330)
+        {
+            difficulte = reloadDifficulte(3, t, tabMask, tabDrap, caseDevoile, firstClic);
+        }
+        break;
+    case 2:
+        if (firstClic && abscisseSouris() > 545 && abscisseSouris() < 635 && ordonneeSouris() > 390 && ordonneeSouris() < 450)
+        {
+            difficulte = reloadDifficulte(1, t, tabMask, tabDrap, caseDevoile, firstClic);
+        }
+        if (firstClic && abscisseSouris() > 735 && abscisseSouris() < 830 && ordonneeSouris() > 390 && ordonneeSouris() < 450)
+        {
+            difficulte = reloadDifficulte(3, t, tabMask, tabDrap, caseDevoile, firstClic);
+        }
+        break;
+    case 3:
+        if (abscisseSouris() > 695 && abscisseSouris() < 785 && ordonneeSouris() > 538 && ordonneeSouris() < 600)
+        {
+            difficulte = reloadDifficulte(1, t, tabMask, tabDrap, caseDevoile, firstClic);
+        }
+        if (abscisseSouris() > 790 && abscisseSouris() < 880 && ordonneeSouris() > 538 && ordonneeSouris() < 600)
+        {
+            difficulte = reloadDifficulte(2, t, tabMask, tabDrap, caseDevoile, firstClic);
+        }
+        break;
+
+    default:
+        break;
+    }
+    return difficulte;
 }

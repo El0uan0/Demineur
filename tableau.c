@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include "tableau.h"
+#include "grille.h"
+#include "images.h"
 
 structTab creeTab(int difficulty)
 {
     structTab t;
-    srand(time(NULL));
     switch (difficulty)
     {
     case 1:
@@ -54,6 +55,19 @@ structTab creeTabMask(structTab t)
     }
 
     return tabMask;
+}
+
+void meursPasAuDebut(int col, int row, structTab *t)
+{
+    t->tableau[row - 1][col - 1] = 0;
+    t->tableau[row - 1][col] = 0;
+    t->tableau[row - 1][col + 1] = 0;
+    t->tableau[row][col - 1] = 0;
+    t->tableau[row][col] = 0;
+    t->tableau[row][col + 1] = 0;
+    t->tableau[row + 1][col - 1] = 0;
+    t->tableau[row + 1][col] = 0;
+    t->tableau[row + 1][col + 1] = 0;
 }
 
 void afficheTab(structTab t)

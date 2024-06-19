@@ -57,6 +57,22 @@ structTab creeTabMask(structTab t)
     return tabMask;
 }
 
+void initDrap(structTab t, int *drapeauxActuels, int *totalDrapeaux)
+{
+    *totalDrapeaux = 0;
+    for (int i = 0; i < t.rows; i++)
+    {
+        for (int j = 0; j < t.cols; j++)
+        {
+            if (t.tableau[i][j] == 9)
+            {
+                *totalDrapeaux += 1;
+            }
+        }
+    }
+    *drapeauxActuels = 0;
+}
+
 void meursPasAuDebut(int col, int row, structTab *t)
 {
     t->tableau[row - 1][col - 1] = 0;

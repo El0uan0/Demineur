@@ -1,6 +1,7 @@
-#include <stdlib.h>        // Pour pouvoir utiliser exit()
-#include <stdio.h>         // Pour pouvoir utiliser printf()
-#include <math.h>          // Pour pouvoir utiliser sin() et cos()
+#include <stdlib.h> // Pour pouvoir utiliser exit()
+#include <stdio.h>  // Pour pouvoir utiliser printf()
+#include <math.h>   // Pour pouvoir utiliser sin() et cos()
+#include <string.h>
 #include "GFXLib/GfxLib.h" // Seul cet include est necessaire pour faire du graphique
 #include "GFXLib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
 #include "GFXLib/ESLib.h"  // Pour utiliser valeurAleatoire()
@@ -23,10 +24,33 @@ int main(int argc, char **argv)
     return 0;
 }
 
+void afficheDrap(int drapeauxActuels, int totalDrapeaux, int firstClic)
+{
+    static char chnDrap[100] = "";
+    static char chnDrapTot[100] = "";
+    if (firstClic)
+    {
+        couleurCourante(0, 0, 0);
+        epaisseurDeTrait(7);
+        sprintf(chnDrap, "%d", drapeauxActuels);
+        afficheChaine(chnDrap, 30, largeurFenetre() - 300, 100);
+        afficheChaine("/", 30, largeurFenetre() - 270, 100);
+        sprintf(chnDrapTot, "%d", totalDrapeaux);
+        afficheChaine(chnDrapTot, 30, largeurFenetre() - 240, 100);
+    }
+    else
+    {
+        strcpy(chnDrap, "");
+        strcpy(chnDrapTot, "");
+    }
+}
+
 void gestionEvenement(EvenementGfx evenement)
 {
     static bool firstClic = 0;
     static int difficulte = 3;
+    static int drapeauxActuels;
+    static int totalDrapeaux;
     static structTab t;
     static structTab tabMask;
     static structTab tabDrap;
@@ -55,6 +79,7 @@ void gestionEvenement(EvenementGfx evenement)
         devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile, &t, &tabMask, &tabDrap, firstClic);
         dessineCaseDevoile(&caseDevoile, listeImages);
         dessineDrap(tabDrap, listeImages);
+        afficheDrap(drapeauxActuels, totalDrapeaux, firstClic);
         break;
 
     case Clavier:
@@ -73,25 +98,33 @@ void gestionEvenement(EvenementGfx evenement)
                 remplirTabChiffres(&t);
                 afficheTab(t);
                 initCaseDevoile(&caseDevoile, 1000);
+                initDrap(t, &drapeauxActuels, &totalDrapeaux);
                 firstClic = true;
             }
-            difficulte = choisirDifficulte(difficulte, &t, &tabMask, &tabDrap, &caseDevoile, &firstClic);
+            difficulte = choisirDifficulte(difficulte, &t, &tabMask, &tabDrap, &caseDevoile, &firstClic, &drapeauxActuels, &totalDrapeaux);
             break;
         case GaucheRelache:
             break;
         case DroiteAppuye:
             if (firstClic)
             {
-                if (tabMask.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0 && tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0)
+                if (estDansTab(t, getCol(abscisseSouris()), getRow(ordonneeSouris())) && tabMask.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0 && tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0 && drapeauxActuels < totalDrapeaux)
                 {
                     tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] = 1;
+                    drapeauxActuels++;
+                    break;
+                }
+                if (estDansTab(t, getCol(abscisseSouris()), getRow(ordonneeSouris())) && tabMask.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0 && tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] != 0)
+                {
+                    tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] = 0;
+                    drapeauxActuels--;
+                    break;
                 }
                 else
                 {
                     tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] = 0;
                 }
             }
-            break;
         case DroiteRelache:
             break;
         case MilieuAppuye:

@@ -13,6 +13,7 @@ typedef struct
 
 structTab creeTab(int difficulty);
 structTab creeTabMask(structTab t);
+void initDrap(structTab t, int *drapeauxActuels, int *totalDrapeaux);
 void afficheTab(structTab t);
 void remplirTabMines(structTab *t);
 void remplirTabChiffres(structTab *t);

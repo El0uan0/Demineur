@@ -112,16 +112,6 @@ void initCaseDevoile(structCaseDevoile *caseDevoile, int nbCases)
     caseDevoile->tableau = (int(*)[5])malloc(nbCases * sizeof(int[5]));
 }
 
-void freeCaseDevoile(structCaseDevoile *caseDevoile)
-{
-    if (caseDevoile->tableau != NULL)
-    {
-        free(caseDevoile->tableau);
-        caseDevoile->tableau = NULL;
-        caseDevoile->indice = 0;
-    }
-}
-
 void ajouteCaseDevoile(structCaseDevoile *caseDevoile, int x1, int y1, int x2, int y2, int type, structTab *tabMask, int row, int col)
 {
     caseDevoile->tableau[caseDevoile->indice][0] = x1;
@@ -309,35 +299,13 @@ void dessineDrap(structTab tabDrap, DonneesImageRGB **listeImages)
     }
 }
 
-void afficheCaseDevoile(structCaseDevoile *caseDevoile)
-{
-    for (int i = 0; i < caseDevoile->indice; i++)
-    {
-        int x1 = caseDevoile->tableau[i][0];
-        int y1 = caseDevoile->tableau[i][1];
-        int x2 = caseDevoile->tableau[i][2];
-        int y2 = caseDevoile->tableau[i][3];
-
-        if (y2 != 0) // [3] est Y2, qui ne pourra jamais être nul
-        {
-            printf("X1 : %d\n", x1);
-            printf("Y1 : %d\n", y1);
-            printf("X2 : %d\n", x2);
-            printf("Y2 : %d\n", y2);
-        }
-        else
-        {
-            break;
-        }
-    }
-}
-
-int reloadDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab *tabDrap, structCaseDevoile *caseDevoile, bool *firstClic)
+int reloadDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab *tabDrap, structCaseDevoile *caseDevoile, bool *firstClic, int *drapeauxActuels, int *totalDrapeaux)
 {
     *firstClic = 0;
     *t = creeTab(difficulte);
     *tabMask = creeTabMask(*t);
     *tabDrap = creeTabMask(*t);
+    initDrap(*t, drapeauxActuels, totalDrapeaux);
     for (int i = 0; i < t->cols * t->rows; i++)
     {
         for (int j = 0; j < 5; j++)
@@ -365,38 +333,38 @@ int reloadDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab
     return 0;
 }
 
-int choisirDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab *tabDrap, structCaseDevoile *caseDevoile, bool *firstClic)
+int choisirDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab *tabDrap, structCaseDevoile *caseDevoile, bool *firstClic, int *drapeauxActuels, int *totalDrapeaux)
 {
     switch (difficulte)
     {
     case 1:
         if (firstClic && abscisseSouris() > 470 && abscisseSouris() < 545 && ordonneeSouris() > 270 && ordonneeSouris() < 330)
         {
-            difficulte = reloadDifficulte(2, t, tabMask, tabDrap, caseDevoile, firstClic);
+            difficulte = reloadDifficulte(2, t, tabMask, tabDrap, caseDevoile, firstClic, drapeauxActuels, totalDrapeaux);
         }
         if (firstClic && abscisseSouris() > 550 && abscisseSouris() < 625 && ordonneeSouris() > 270 && ordonneeSouris() < 330)
         {
-            difficulte = reloadDifficulte(3, t, tabMask, tabDrap, caseDevoile, firstClic);
+            difficulte = reloadDifficulte(3, t, tabMask, tabDrap, caseDevoile, firstClic, drapeauxActuels, totalDrapeaux);
         }
         break;
     case 2:
         if (firstClic && abscisseSouris() > 545 && abscisseSouris() < 635 && ordonneeSouris() > 390 && ordonneeSouris() < 450)
         {
-            difficulte = reloadDifficulte(1, t, tabMask, tabDrap, caseDevoile, firstClic);
+            difficulte = reloadDifficulte(1, t, tabMask, tabDrap, caseDevoile, firstClic, drapeauxActuels, totalDrapeaux);
         }
         if (firstClic && abscisseSouris() > 735 && abscisseSouris() < 830 && ordonneeSouris() > 390 && ordonneeSouris() < 450)
         {
-            difficulte = reloadDifficulte(3, t, tabMask, tabDrap, caseDevoile, firstClic);
+            difficulte = reloadDifficulte(3, t, tabMask, tabDrap, caseDevoile, firstClic, drapeauxActuels, totalDrapeaux);
         }
         break;
     case 3:
         if (abscisseSouris() > 695 && abscisseSouris() < 785 && ordonneeSouris() > 538 && ordonneeSouris() < 600)
         {
-            difficulte = reloadDifficulte(1, t, tabMask, tabDrap, caseDevoile, firstClic);
+            difficulte = reloadDifficulte(1, t, tabMask, tabDrap, caseDevoile, firstClic, drapeauxActuels, totalDrapeaux);
         }
         if (abscisseSouris() > 790 && abscisseSouris() < 880 && ordonneeSouris() > 538 && ordonneeSouris() < 600)
         {
-            difficulte = reloadDifficulte(2, t, tabMask, tabDrap, caseDevoile, firstClic);
+            difficulte = reloadDifficulte(2, t, tabMask, tabDrap, caseDevoile, firstClic, drapeauxActuels, totalDrapeaux);
         }
         break;
 

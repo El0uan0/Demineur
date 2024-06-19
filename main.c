@@ -1,7 +1,7 @@
 #include <stdlib.h> // Pour pouvoir utiliser exit()
 #include <stdio.h>  // Pour pouvoir utiliser printf()
 #include <math.h>   // Pour pouvoir utiliser sin() et cos()
-#include <string.h>
+#include <time.h>
 #include "GFXLib/GfxLib.h" // Seul cet include est necessaire pour faire du graphique
 #include "GFXLib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
 #include "GFXLib/ESLib.h"  // Pour utiliser valeurAleatoire()
@@ -17,32 +17,11 @@ int main(int argc, char **argv)
 {
     initialiseGfx(argc, argv);
 
-    prepareFenetreGraphique("OpenGL", LargeurFenetre, HauteurFenetre);
+    prepareFenetreGraphique("Demineur", LargeurFenetre, HauteurFenetre);
 
     lanceBoucleEvenements();
 
     return 0;
-}
-
-void afficheDrap(int drapeauxActuels, int totalDrapeaux, int firstClic)
-{
-    static char chnDrap[100] = "";
-    static char chnDrapTot[100] = "";
-    if (firstClic)
-    {
-        couleurCourante(0, 0, 0);
-        epaisseurDeTrait(7);
-        sprintf(chnDrap, "%d", drapeauxActuels);
-        afficheChaine(chnDrap, 30, largeurFenetre() - 300, 100);
-        afficheChaine("/", 30, largeurFenetre() - 270, 100);
-        sprintf(chnDrapTot, "%d", totalDrapeaux);
-        afficheChaine(chnDrapTot, 30, largeurFenetre() - 240, 100);
-    }
-    else
-    {
-        strcpy(chnDrap, "");
-        strcpy(chnDrapTot, "");
-    }
 }
 
 void gestionEvenement(EvenementGfx evenement)
@@ -51,6 +30,7 @@ void gestionEvenement(EvenementGfx evenement)
     static int difficulte = 3;
     static int drapeauxActuels;
     static int totalDrapeaux;
+    static int debutPartie;
     static structTab t;
     static structTab tabMask;
     static structTab tabDrap;
@@ -66,6 +46,7 @@ void gestionEvenement(EvenementGfx evenement)
         tabDrap = creeTabMask(t);
         initImages(listeImages);
         initAssets(listeAssets);
+        debutPartie = time(NULL);
         demandeTemporisation(20);
         break;
 
@@ -79,7 +60,8 @@ void gestionEvenement(EvenementGfx evenement)
         devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile, &t, &tabMask, &tabDrap, firstClic);
         dessineCaseDevoile(&caseDevoile, listeImages);
         dessineDrap(tabDrap, listeImages);
-        afficheDrap(drapeauxActuels, totalDrapeaux, firstClic);
+        afficheDrap(drapeauxActuels, totalDrapeaux, firstClic, listeImages);
+        afficheTemps(debutPartie);
         break;
 
     case Clavier:

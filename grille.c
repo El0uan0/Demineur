@@ -2,6 +2,7 @@
 #include <stdio.h>  // Pour pouvoir utiliser printf()
 #include <math.h>   // Pour pouvoir utiliser sin() et cos()
 #include <time.h>
+#include <string.h>
 #include "GFXLib/GfxLib.h" // Seul cet include est necessaire pour faire du graphique
 #include "GFXLib/BmpLib.h" // Cet include permet de manipuler des fichiers BMP
 #include "GFXLib/ESLib.h"  // Pour utiliser valeurAleatoire()
@@ -218,6 +219,7 @@ void devoileCase(int col, int row, structCaseDevoile *caseDevoile, structTab *t,
             }
             break;
         case 9:
+
             break;
         default:
             break;
@@ -372,4 +374,35 @@ int choisirDifficulte(int difficulte, structTab *t, structTab *tabMask, structTa
         break;
     }
     return difficulte;
+}
+
+void afficheDrap(int drapeauxActuels, int totalDrapeaux, int firstClic, DonneesImageRGB **listeImages)
+{
+    static char chnDrap[100] = "";
+    static char chnDrapTot[100] = "";
+    if (firstClic)
+    {
+        ecrisImage(largeurFenetre() - 290, 90, 60, 60, listeImages[11]->donneesRGB);
+        couleurCourante(0, 0, 0);
+        epaisseurDeTrait(1);
+        sprintf(chnDrap, "%d", drapeauxActuels);
+        afficheChaine(chnDrap, 30, largeurFenetre() - 230, 100);
+        afficheChaine("/", 30, largeurFenetre() - 180, 100);
+        sprintf(chnDrapTot, "%d", totalDrapeaux);
+        afficheChaine(chnDrapTot, 30, largeurFenetre() - 150, 100);
+    }
+    else
+    {
+        strcpy(chnDrap, "");
+        strcpy(chnDrapTot, "");
+    }
+}
+
+void afficheTemps(int debutPartie)
+{
+    int tempsEcoule = (int)difftime(time(NULL), debutPartie);
+    char ch[50];
+    sprintf(ch, "Temps : %d s", tempsEcoule);
+    couleurCourante(0, 0, 0);
+    afficheChaine(ch, 20, largeurFenetre() / 3, hauteurFenetre() - 30);
 }

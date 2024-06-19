@@ -25,4 +25,7 @@ void initCaseDevoile(structCaseDevoile *caseDevoile, int nbCases);
 void dessineDrap(structTab tabDrap, DonneesImageRGB **listeImages);
 int reloadDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab *tabDrap, structCaseDevoile *caseDevoile, bool *firstClic, int *drapeauxActuels, int *totalDrapeaux);
 int choisirDifficulte(int difficulte, structTab *t, structTab *tabMask, structTab *tabDrap, structCaseDevoile *caseDevoile, bool *firstClic, int *drapeauxActuels, int *totalDrapeaux);
+void afficheDrap(int drapeauxActuels, int totalDrapeaux, int firstClic, DonneesImageRGB **listeImages);
+void afficheTemps(int debutPartie);
+
 #endif

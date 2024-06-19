@@ -21,6 +21,7 @@ void initImages(DonneesImageRGB **listeImages)
     listeImages[8] = lisBMPRGB("images/8.bmp");
     listeImages[9] = lisBMPRGB("images/bombe.bmp");
     listeImages[10] = lisBMPRGB("images/drapeau.bmp");
+    listeImages[11] = lisBMPRGB("images/drapeau_big.bmp");
 }
 
 void initAssets(DonneesImageRGB **listeAssets)

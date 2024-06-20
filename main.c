@@ -28,13 +28,15 @@ void gestionEvenement(EvenementGfx evenement)
 {
     static bool firstClic = 0;
     static int difficulte = 3;
+    static int peutJouer = 0;
+    static int mort = 0;
     static int drapeauxActuels;
     static int totalDrapeaux;
     static int debutPartie;
-    static structTab t;
-    static structTab tabMask;
-    static structTab tabDrap;
-    static structCaseDevoile caseDevoile;
+    static structTab t = {0};
+    static structTab tabMask = {0};
+    static structTab tabDrap = {0};
+    static structCaseDevoile caseDevoile = {0};
     static DonneesImageRGB *listeImages[12] = {0};
     static DonneesImageRGB *listeAssets[12] = {0};
 
@@ -46,6 +48,7 @@ void gestionEvenement(EvenementGfx evenement)
         tabDrap = creeTabMask(t);
         initImages(listeImages);
         initAssets(listeAssets);
+        initCaseDevoile(&caseDevoile, t.cols * t.rows);
         debutPartie = time(NULL);
         demandeTemporisation(20);
         break;
@@ -57,11 +60,12 @@ void gestionEvenement(EvenementGfx evenement)
     case Affichage:
         afficheGrille(difficulte, &t);
         afficheOverlay(difficulte, listeAssets);
-        devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile, &t, &tabMask, &tabDrap, firstClic);
         dessineCaseDevoile(&caseDevoile, listeImages);
         dessineDrap(tabDrap, listeImages);
         afficheDrap(drapeauxActuels, totalDrapeaux, firstClic, listeImages);
         afficheTemps(debutPartie);
+        afficheMort(mort, difficulte, listeAssets);
+        afficheGagne(drapeauxActuels, totalDrapeaux, t, tabDrap, difficulte, listeAssets, &peutJouer);
         break;
 
     case Clavier:
@@ -78,17 +82,19 @@ void gestionEvenement(EvenementGfx evenement)
                 remplirTabMines(&t);
                 meursPasAuDebut(getCol(abscisseSouris()), getRow(ordonneeSouris()), &t);
                 remplirTabChiffres(&t);
-                afficheTab(t);
                 initCaseDevoile(&caseDevoile, 1000);
                 initDrap(t, &drapeauxActuels, &totalDrapeaux);
                 firstClic = true;
+                peutJouer = 1;
             }
-            difficulte = choisirDifficulte(difficulte, &t, &tabMask, &tabDrap, &caseDevoile, &firstClic, &drapeauxActuels, &totalDrapeaux);
+            devoileCase(getCol(abscisseSouris()), getRow(ordonneeSouris()), &caseDevoile, &t, &tabMask, &tabDrap, firstClic, &peutJouer, &mort);
+            difficulte = choisirDifficulte(difficulte, &t, &tabMask, &tabDrap, &caseDevoile, &firstClic, &drapeauxActuels, &totalDrapeaux, &debutPartie, &mort);
+            rejouer(difficulte, &t, &tabMask, &tabDrap, &caseDevoile, &firstClic, &drapeauxActuels, &totalDrapeaux, &debutPartie, &mort);
             break;
         case GaucheRelache:
             break;
         case DroiteAppuye:
-            if (firstClic)
+            if (firstClic && peutJouer)
             {
                 if (estDansTab(t, getCol(abscisseSouris()), getRow(ordonneeSouris())) && tabMask.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0 && tabDrap.tableau[getRow(ordonneeSouris())][getCol(abscisseSouris())] == 0 && drapeauxActuels < totalDrapeaux)
                 {

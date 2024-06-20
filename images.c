@@ -29,6 +29,12 @@ void initAssets(DonneesImageRGB **listeAssets)
     listeAssets[0] = lisBMPRGB("assets/asset.bmp");
     listeAssets[1] = lisBMPRGB("assets/asset2.bmp");
     listeAssets[2] = lisBMPRGB("assets/asset3.bmp");
+    listeAssets[3] = lisBMPRGB("assets/loose.bmp");
+    listeAssets[4] = lisBMPRGB("assets/loose2.bmp");
+    listeAssets[5] = lisBMPRGB("assets/loose3.bmp");
+    listeAssets[6] = lisBMPRGB("assets/win.bmp");
+    listeAssets[7] = lisBMPRGB("assets/win2.bmp");
+    listeAssets[8] = lisBMPRGB("assets/win3.bmp");
 }
 
 void afficheOverlay(int difficulte, DonneesImageRGB **listeAssets)

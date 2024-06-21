@@ -19,19 +19,19 @@ void afficheGrille(int difficulte, structTab *t)
     switch (difficulte)
     {
     case 1:
-        if (larg != 400 || haut != 550)
+        if (larg != 700 || haut != 550)
         {
             redimensionneFenetre(700, 550);
         }
         break;
     case 2:
-        if (larg != 550 || haut != 700)
+        if (larg != 850 || haut != 700)
         {
             redimensionneFenetre(850, 700);
         }
         break;
     case 3:
-        if (larg != 700 || haut != 850)
+        if (larg != 1000 || haut != 850)
         {
             redimensionneFenetre(1000, 850);
         }
